@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contactez TALBI'FLUID pour un devis gratuit ou une intervention d'urgence. Formulaire en ligne, téléphone, email." />
+  <title>Contact & Devis — TALBI'FLUID</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="header" id="header">
+    <div class="header-top">
+      <div class="container">
+        <div class="header-top-inner">
+          <div class="header-contact-info">
+            <a href="tel:+33612345678" class="header-phone">📞 +33 6 12 34 56 78</a>
+            <span class="header-badge">Disponible 24h/24 · 7j/7</span>
+          </div>
+          <div class="lang-switcher">
+            <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+            <button class="lang-btn" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" onclick="setLang('es')">ES</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar" id="navbar">
+      <div class="container">
+        <div class="nav-inner">
+          <a href="index.html" class="logo">
+            <div class="logo-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="18" fill="#1a73e8"/>
+                <path d="M10 26 C10 26 12 14 18 14 C24 14 26 26 26 26" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <circle cx="18" cy="10" r="3" fill="white"/>
+                <rect x="16" y="22" width="4" height="6" rx="2" fill="white"/>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="logo-main">TALBI<span class="logo-accent">'FLUID</span></span>
+              <span class="logo-sub">Plomberie · Chauffage · Climatisation</span>
+            </div>
+          </a>
+          <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html" class="nav-link">Accueil</a></li>
+            <li><a href="services.html" class="nav-link">Services</a></li>
+            <li><a href="urgence.html" class="nav-link nav-urgence">🚨 Urgence</a></li>
+            <li><a href="about.html" class="nav-link">À propos</a></li>
+            <li><a href="avis.html" class="nav-link">Avis</a></li>
+            <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <li><a href="contact.html" class="nav-link nav-contact-btn active">Contact</a></li>
+          </ul>
+          <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <h1>Contact & Devis Gratuit</h1>
+      <p>Réponse garantie sous 2 heures · Devis gratuit et sans engagement</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="contact-wrapper">
+        <!-- INFO -->
+        <div class="contact-info">
+          <span class="section-tag">Nous contacter</span>
+          <h2 class="section-title">Parlons de votre projet</h2>
+          <p style="color:var(--text-light);margin-bottom:32px">
+            Que ce soit pour une urgence, un devis ou une question technique, notre équipe est prête à vous répondre rapidement.
+          </p>
+
+          <div class="contact-details">
+            <div class="contact-item">
+              <span class="contact-icon">📞</span>
+              <div>
+                <strong>Téléphone (urgences incluses)</strong>
+                <a href="tel:+33612345678" style="display:block;font-size:1.1rem;margin-top:2px">+33 6 12 34 56 78</a>
+              </div>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">📧</span>
+              <div>
+                <strong>Email</strong>
+                <a href="mailto:contact@talbifluid.fr" style="display:block;margin-top:2px">contact@talbifluid.fr</a>
+              </div>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">📍</span>
+              <div>
+                <strong>Zone d'intervention</strong>
+                <span style="display:block;margin-top:2px">Île-de-France et région parisienne</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">🕐</span>
+              <div>
+                <strong>Horaires bureau</strong>
+                <span style="display:block;margin-top:2px">Lun–Ven 8h–19h · Sam 9h–17h</span>
+              </div>
+            </div>
+            <div class="contact-item" style="background:#fee2e2;padding:16px;border-radius:12px;border-left:4px solid #dc2626">
+              <span class="contact-icon">🚨</span>
+              <div>
+                <strong style="color:#dc2626">Urgences 24h/24 · 7j/7</strong>
+                <a href="tel:+33612345678" style="display:block;color:#dc2626;font-weight:700;font-size:1.1rem;margin-top:2px">+33 6 12 34 56 78</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certifications -->
+          <div style="margin-top:36px;padding:24px;background:var(--bg-gray);border-radius:16px">
+            <h4 style="margin-bottom:16px;font-size:0.95rem">Nos certifications</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:10px">
+              <span style="background:white;border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600">🏆 RGE QualiPAC</span>
+              <span style="background:white;border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600">🏆 QualiGaz</span>
+              <span style="background:white;border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600">✅ RC Pro</span>
+              <span style="background:white;border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600">✅ Garantie décennale</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULAIRE COMPLET -->
+        <form class="contact-form" id="contactForm" onsubmit="submitForm(event)">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:24px">Votre demande</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fname">Prénom & Nom *</label>
+              <input type="text" id="fname" name="name" required placeholder="Jean Dupont" />
+            </div>
+            <div class="form-group">
+              <label for="fphone">Téléphone *</label>
+              <input type="tel" id="fphone" name="phone" required placeholder="06 12 34 56 78" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="femail">Email</label>
+            <input type="email" id="femail" name="email" placeholder="jean@exemple.fr" />
+          </div>
+
+          <div class="form-group">
+            <label for="fservice">Type de service *</label>
+            <select id="fservice" name="service" required>
+              <option value="">Sélectionnez un service</option>
+              <option value="plomberie">Plomberie</option>
+              <option value="chauffage">Chauffage</option>
+              <option value="climatisation">Climatisation</option>
+              <option value="urgence">Dépannage urgent</option>
+              <option value="devis">Demande de devis</option>
+              <option value="renovation">Rénovation</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="faddress">Adresse d'intervention</label>
+            <input type="text" id="faddress" name="address" placeholder="123 rue de la Paix, 75001 Paris" />
+          </div>
+
+          <div class="form-group">
+            <label for="fdisponibilite">Disponibilité souhaitée</label>
+            <select id="fdisponibilite" name="disponibilite">
+              <option value="">Quand souhaitez-vous l'intervention ?</option>
+              <option value="urgence">Le plus vite possible (urgence)</option>
+              <option value="aujourd-hui">Aujourd'hui</option>
+              <option value="demain">Demain</option>
+              <option value="semaine">Cette semaine</option>
+              <option value="flexible">Je suis flexible</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="fmessage">Description du problème ou de votre projet *</label>
+            <textarea id="fmessage" name="message" rows="5" required placeholder="Décrivez votre besoin en détail..."></textarea>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px">
+            <input type="checkbox" id="rgpd" name="rgpd" required style="margin-top:4px;flex-shrink:0;width:auto">
+            <label for="rgpd" style="font-size:0.82rem;color:var(--text-light);cursor:pointer">
+              J'accepte que mes données soient traitées pour répondre à ma demande.
+              <a href="politique-confidentialite.html" style="color:var(--primary)">Politique de confidentialité</a>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-xl">
+            📩 Envoyer ma demande de devis
+          </button>
+          <p class="form-note">Réponse garantie sous 2 heures · Gratuit · Sans engagement</p>
+          <div class="form-success" id="formSuccess" style="display:none;align-items:center;gap:10px">
+            <span>✅</span> <span>Votre demande a été envoyée ! Nous vous contactons bientôt.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 TALBI'FLUID — Tous droits réservés</p>
+        <div class="footer-legal">
+          <a href="mentions-legales.html">Mentions légales</a>
+          <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="tel:+33612345678" class="float-call">📞</a>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "talbifluid",
+  "version": "1.0.0",
+  "description": "Site TALBI'FLUID — Plomberie Chauffage Climatisation",
+  "dependencies": {
+    "nodemailer": "^6.9.9"
+  }
+}

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="À propos de TALBI'FLUID — 15 ans d'expertise en plomberie, chauffage et climatisation. Notre équipe certifiée à votre service." />
+  <title>À propos — TALBI'FLUID</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="header-top">
+      <div class="container">
+        <div class="header-top-inner">
+          <div class="header-contact-info">
+            <a href="tel:+33612345678" class="header-phone">📞 +33 6 12 34 56 78</a>
+            <span class="header-badge">Disponible 24h/24 · 7j/7</span>
+          </div>
+          <div class="lang-switcher">
+            <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+            <button class="lang-btn" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" onclick="setLang('es')">ES</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar" id="navbar">
+      <div class="container">
+        <div class="nav-inner">
+          <a href="index.html" class="logo">
+            <div class="logo-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="18" fill="#1a73e8"/>
+                <path d="M10 26 C10 26 12 14 18 14 C24 14 26 26 26 26" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <circle cx="18" cy="10" r="3" fill="white"/>
+                <rect x="16" y="22" width="4" height="6" rx="2" fill="white"/>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="logo-main">TALBI<span class="logo-accent">'FLUID</span></span>
+              <span class="logo-sub">Plomberie · Chauffage · Climatisation</span>
+            </div>
+          </a>
+          <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html" class="nav-link">Accueil</a></li>
+            <li><a href="services.html" class="nav-link">Services</a></li>
+            <li><a href="urgence.html" class="nav-link nav-urgence">🚨 Urgence</a></li>
+            <li><a href="about.html" class="nav-link active">À propos</a></li>
+            <li><a href="avis.html" class="nav-link">Avis</a></li>
+            <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <li><a href="contact.html" class="nav-link nav-contact-btn">Contact</a></li>
+          </ul>
+          <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <h1>À propos de TALBI'FLUID</h1>
+      <p>15 ans d'expertise, une passion pour le travail bien fait et le service client</p>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="section">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+        <div>
+          <span class="section-tag">Notre histoire</span>
+          <h2 class="section-title" style="text-align:left">Qui sommes-nous ?</h2>
+          <p style="color:var(--text-light);line-height:1.8;margin-bottom:20px;font-size:1.05rem">
+            TALBI'FLUID est une entreprise familiale fondée il y a 15 ans avec une vision claire : offrir un service de plomberie et de chauffage d'excellence, alliant expertise technique et relation client irréprochable.
+          </p>
+          <p style="color:var(--text-light);line-height:1.8;margin-bottom:20px">
+            Implantés en Île-de-France, nous intervenons chez les particuliers et les professionnels pour tous leurs besoins en plomberie, chauffage et climatisation. Notre équipe de techniciens certifiés garantit un travail de qualité, dans le respect des normes et des délais.
+          </p>
+          <p style="color:var(--text-light);line-height:1.8;margin-bottom:32px">
+            Notre philosophie : la transparence, la réactivité et la satisfaction client. Chaque intervention est une opportunité de confirmer la confiance que vous nous accordez.
+          </p>
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <a href="contact.html" class="btn btn-primary">Nous contacter</a>
+            <a href="services.html" class="btn btn-outline">Nos services</a>
+          </div>
+        </div>
+        <div>
+          <div style="background:linear-gradient(135deg,var(--primary-light),#bfdbfe);border-radius:24px;padding:48px;text-align:center">
+            <div style="font-size:5rem">👨‍🔧</div>
+            <h3 style="margin:20px 0 8px;font-size:1.4rem">L'équipe TALBI'FLUID</h3>
+            <p style="color:var(--text-light)">Des professionnels passionnés à votre service</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHIFFRES CLÉS -->
+  <section class="section section-gray">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">TALBI'FLUID en chiffres</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px">
+        <div class="why-item" style="text-align:center">
+          <div style="font-size:3rem;font-weight:800;color:var(--primary)">15+</div>
+          <h4>Années d'expérience</h4>
+          <p>Dans le domaine de la plomberie et du chauffage</p>
+        </div>
+        <div class="why-item" style="text-align:center">
+          <div style="font-size:3rem;font-weight:800;color:var(--primary)">500+</div>
+          <h4>Clients satisfaits</h4>
+          <p>Particuliers et professionnels font confiance à TALBI'FLUID</p>
+        </div>
+        <div class="why-item" style="text-align:center">
+          <div style="font-size:3rem;font-weight:800;color:var(--primary)">24/7</div>
+          <h4>Disponibilité</h4>
+          <p>Équipe d'urgence disponible 365 jours par an</p>
+        </div>
+        <div class="why-item" style="text-align:center">
+          <div style="font-size:3rem;font-weight:800;color:var(--primary)">4.9★</div>
+          <h4>Note moyenne</h4>
+          <p>Sur 312 avis vérifiés Google et plateformes</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Certifications & Garanties</span>
+        <h2 class="section-title">Votre confiance est notre priorité</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px">
+        <div class="service-card">
+          <div class="service-icon">🏆</div>
+          <h3 class="service-title">RGE QualiPAC</h3>
+          <p class="service-desc">Certification Reconnu Garant de l'Environnement pour les pompes à chaleur. Vous permet d'accéder aux aides de l'État.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔒</div>
+          <h3 class="service-title">QualiGaz</h3>
+          <p class="service-desc">Qualification professionnelle pour les installations au gaz. Sécurité et conformité garanties sur toutes nos interventions.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">✅</div>
+          <h3 class="service-title">RC Pro & Décennale</h3>
+          <p class="service-desc">Assurance responsabilité civile professionnelle et garantie décennale sur tous nos travaux. Vous êtes protégé.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 TALBI'FLUID — Tous droits réservés</p>
+        <div class="footer-legal">
+          <a href="mentions-legales.html">Mentions légales</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="tel:+33612345678" class="float-call">📞</a>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

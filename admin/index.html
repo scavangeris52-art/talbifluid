@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration — TALBI'FLUID</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { background: #f8fafc; }
+    .admin-layout { display:flex; min-height:100vh; }
+    #loginScreen {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#0f2044,#1a73e8);
+    }
+    .login-card {
+      background:white; border-radius:20px; padding:48px 40px;
+      width:100%; max-width:400px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    }
+    .login-logo { font-size:2rem; font-weight:800; color:#0f2044; margin-bottom:8px; }
+    .login-logo span { color:#ff6b35; }
+    .login-sub { color:var(--text-light); font-size:0.9rem; margin-bottom:32px; }
+    .login-form .form-group { margin-bottom:16px; text-align:left; }
+    .login-error { color:#dc2626; font-size:0.85rem; margin-top:8px; display:none; }
+  </style>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">TALBI<span>'FLUID</span></div>
+    <p class="login-sub">Espace Administrateur</p>
+    <form class="login-form" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label>Identifiant</label>
+        <input type="text" id="loginUser" placeholder="admin" required />
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="loginPass" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">Se connecter</button>
+      <p class="login-error" id="loginError">Identifiants incorrects</p>
+    </form>
+    <p style="margin-top:20px;font-size:0.78rem;color:var(--text-light)">Demo: admin / admin123</p>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="adminApp" style="display:none;width:100%">
+  <div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-logo">
+        <div style="color:white;font-weight:800;font-size:1.1rem">TALBI<span style="color:#ff6b35">'FLUID</span></div>
+        <div style="color:#94a3b8;font-size:0.78rem;margin-top:4px">Administration</div>
+      </div>
+
+      <nav class="admin-nav">
+        <div class="admin-nav-section">Tableau de bord</div>
+        <a class="admin-nav-item active" onclick="showTab('dashboard')">📊 Tableau de bord</a>
+
+        <div class="admin-nav-section">Gestion</div>
+        <a class="admin-nav-item" onclick="showTab('demandes')">📥 Demandes clients</a>
+        <a class="admin-nav-item" onclick="showTab('avis')">⭐ Avis clients</a>
+        <a class="admin-nav-item" onclick="showTab('rdv')">📅 Rendez-vous</a>
+
+        <div class="admin-nav-section">Contenu</div>
+        <a class="admin-nav-item" onclick="showTab('services')">🔧 Services & Tarifs</a>
+        <a class="admin-nav-item" onclick="showTab('blog')">📝 Articles Blog</a>
+        <a class="admin-nav-item" onclick="showTab('textes')">✏️ Textes du site</a>
+
+        <div class="admin-nav-section">Compte</div>
+        <a class="admin-nav-item" onclick="doLogout()">🚪 Déconnexion</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="admin-main">
+      <header class="admin-header">
+        <h1 style="font-size:1.1rem;font-weight:700" id="adminTitle">Tableau de bord</h1>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:0.85rem;color:var(--text-light)">Bonjour, Administrateur</span>
+          <a href="../index.html" target="_blank" class="btn btn-outline" style="padding:6px 14px;font-size:0.82rem">Voir le site →</a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="tab-content active">
+          <div class="admin-stat-grid">
+            <div class="admin-stat">
+              <div class="admin-stat-icon">📥</div>
+              <div class="admin-stat-value" id="stat-demandes">12</div>
+              <div class="admin-stat-label">Nouvelles demandes</div>
+            </div>
+            <div class="admin-stat">
+              <div class="admin-stat-icon">⭐</div>
+              <div class="admin-stat-value" id="stat-avis">5</div>
+              <div class="admin-stat-label">Avis à valider</div>
+            </div>
+            <div class="admin-stat">
+              <div class="admin-stat-icon">📅</div>
+              <div class="admin-stat-value" id="stat-rdv">8</div>
+              <div class="admin-stat-label">RDV cette semaine</div>
+            </div>
+            <div class="admin-stat">
+              <div class="admin-stat-icon">💬</div>
+              <div class="admin-stat-value">4.9★</div>
+              <div class="admin-stat-label">Note moyenne</div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <h3 style="margin-bottom:20px;font-weight:700">Dernières demandes</h3>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Client</th><th>Service</th><th>Date</th><th>Statut</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Marie L.</strong><br><span style="font-size:0.8rem;color:var(--text-light)">06 11 22 33 44</span></td>
+                  <td>Plomberie — Fuite</td>
+                  <td>18/03/2025</td>
+                  <td><span class="badge badge-warning">En attente</span></td>
+                  <td><button class="btn btn-primary" style="padding:4px 12px;font-size:0.8rem">Traiter</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Jean B.</strong><br><span style="font-size:0.8rem;color:var(--text-light)">06 55 66 77 88</span></td>
+                  <td>Chauffage — Entretien</td>
+                  <td>17/03/2025</td>
+                  <td><span class="badge badge-success">Confirmé</span></td>
+                  <td><button class="btn btn-outline" style="padding:4px 12px;font-size:0.8rem">Voir</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Sophie M.</strong><br><span style="font-size:0.8rem;color:var(--text-light)">06 99 88 77 66</span></td>
+                  <td>Climatisation — Installation</td>
+                  <td>16/03/2025</td>
+                  <td><span class="badge badge-info">Devis envoyé</span></td>
+                  <td><button class="btn btn-outline" style="padding:4px 12px;font-size:0.8rem">Voir</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DEMANDES TAB -->
+        <div id="tab-demandes" class="tab-content">
+          <div class="admin-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <h3 style="font-weight:700">Demandes clients</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem">
+                  <option>Tous les statuts</option>
+                  <option>En attente</option>
+                  <option>Confirmé</option>
+                  <option>Terminé</option>
+                </select>
+              </div>
+            </div>
+            <table class="admin-table">
+              <thead>
+                <tr><th>Client</th><th>Service</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Marie L.</strong><br><a href="tel:0611223344" style="font-size:0.8rem;color:var(--primary)">06 11 22 33 44</a></td>
+                  <td>Plomberie</td>
+                  <td style="max-width:200px;font-size:0.85rem;color:var(--text-light)">Fuite sous l'évier de la cuisine, urgence relative</td>
+                  <td>18/03/2025</td>
+                  <td><span class="badge badge-warning">En attente</span></td>
+                  <td>
+                    <div style="display:flex;gap:6px">
+                      <button class="btn btn-primary" style="padding:4px 10px;font-size:0.78rem" onclick="changeStatus(this,'Confirmé','badge-success')">✓</button>
+                      <button class="btn btn-outline" style="padding:4px 10px;font-size:0.78rem;color:var(--urgence);border-color:var(--urgence)" onclick="changeStatus(this,'Annulé','badge-danger')">✗</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Jean B.</strong><br><a href="tel:0655667788" style="font-size:0.8rem;color:var(--primary)">06 55 66 77 88</a></td>
+                  <td>Chauffage</td>
+                  <td style="max-width:200px;font-size:0.85rem;color:var(--text-light)">Entretien chaudière annuel obligatoire</td>
+                  <td>17/03/2025</td>
+                  <td><span class="badge badge-success">Confirmé</span></td>
+                  <td><button class="btn btn-outline" style="padding:4px 10px;font-size:0.78rem" onclick="changeStatus(this,'Terminé','badge-info')">Clôturer</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AVIS TAB -->
+        <div id="tab-avis" class="tab-content">
+          <div class="admin-card">
+            <h3 style="font-weight:700;margin-bottom:20px">Avis clients à modérer</h3>
+            <div id="reviewList">
+              <div style="border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:flex-start">
+                  <div>
+                    <div style="font-weight:700">Thomas R. <span style="color:#f59e0b">★★★★★</span></div>
+                    <div style="font-size:0.8rem;color:var(--text-light)">Service: Dépannage urgent · 18/03/2025</div>
+                    <p style="margin-top:8px;font-size:0.9rem;font-style:italic">"Dépannage WC bouché le dimanche matin. Arrivée en 45 minutes. Parfait !"</p>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-shrink:0">
+                    <button class="btn btn-primary" style="padding:6px 14px;font-size:0.82rem" onclick="approveReview(this)">✓ Publier</button>
+                    <button class="btn btn-outline" style="padding:6px 14px;font-size:0.82rem;color:var(--urgence);border-color:var(--urgence)" onclick="rejectReview(this)">✗ Rejeter</button>
+                  </div>
+                </div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:flex-start">
+                  <div>
+                    <div style="font-weight:700">Amélie D. <span style="color:#f59e0b">★★★★★</span></div>
+                    <div style="font-size:0.8rem;color:var(--text-light)">Service: Rénovation · 15/03/2025</div>
+                    <p style="margin-top:8px;font-size:0.9rem;font-style:italic">"Rénovation complète de notre salle de bain. Travail impeccable, respect des délais."</p>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-shrink:0">
+                    <button class="btn btn-primary" style="padding:6px 14px;font-size:0.82rem" onclick="approveReview(this)">✓ Publier</button>
+                    <button class="btn btn-outline" style="padding:6px 14px;font-size:0.82rem;color:var(--urgence);border-color:var(--urgence)" onclick="rejectReview(this)">✗ Rejeter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVICES & TARIFS TAB -->
+        <div id="tab-services" class="tab-content">
+          <div class="admin-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+              <h3 style="font-weight:700">Services & Tarifs</h3>
+              <button class="btn btn-primary" onclick="addService()">+ Ajouter un service</button>
+            </div>
+            <table class="admin-table" id="servicesTable">
+              <thead>
+                <tr><th>Service</th><th>Catégorie</th><th>Prix (€)</th><th>Description</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr id="srow-1">
+                  <td><input type="text" value="Détection de fuite" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:150px" /></td>
+                  <td><select style="border:1px solid var(--border);padding:6px 10px;border-radius:6px"><option selected>Plomberie</option><option>Chauffage</option><option>Climatisation</option><option>Urgence</option></select></td>
+                  <td><input type="number" value="49" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:80px" /></td>
+                  <td><input type="text" value="Diagnostic complet avec rapport" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:200px" /></td>
+                  <td><button class="btn btn-primary" style="padding:4px 12px;font-size:0.8rem" onclick="saveRow('srow-1')">Sauvegarder</button></td>
+                </tr>
+                <tr id="srow-2">
+                  <td><input type="text" value="Entretien chaudière" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:150px" /></td>
+                  <td><select style="border:1px solid var(--border);padding:6px 10px;border-radius:6px"><option>Plomberie</option><option selected>Chauffage</option><option>Climatisation</option><option>Urgence</option></select></td>
+                  <td><input type="number" value="89" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:80px" /></td>
+                  <td><input type="text" value="Révision complète + attestation" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:200px" /></td>
+                  <td><button class="btn btn-primary" style="padding:4px 12px;font-size:0.8rem" onclick="saveRow('srow-2')">Sauvegarder</button></td>
+                </tr>
+                <tr id="srow-3">
+                  <td><input type="text" value="Installation climatisation" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:150px" /></td>
+                  <td><select style="border:1px solid var(--border);padding:6px 10px;border-radius:6px"><option>Plomberie</option><option>Chauffage</option><option selected>Climatisation</option><option>Urgence</option></select></td>
+                  <td><input type="number" value="799" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:80px" /></td>
+                  <td><input type="text" value="Fourniture + pose + mise en service" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:200px" /></td>
+                  <td><button class="btn btn-primary" style="padding:4px 12px;font-size:0.8rem" onclick="saveRow('srow-3')">Sauvegarder</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BLOG TAB -->
+        <div id="tab-blog" class="tab-content">
+          <div class="admin-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+              <h3 style="font-weight:700">Articles Blog</h3>
+              <button class="btn btn-primary" onclick="showBlogEditor()">+ Nouvel article</button>
+            </div>
+
+            <div id="blogEditorPanel" style="display:none;background:var(--bg-gray);border-radius:12px;padding:24px;margin-bottom:24px">
+              <h4 style="font-weight:700;margin-bottom:16px">Éditeur d'article</h4>
+              <div class="form-group"><label>Titre *</label><input type="text" placeholder="Titre de l'article" id="artTitle" /></div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Catégorie</label>
+                  <select id="artCat">
+                    <option value="plomberie">Plomberie</option>
+                    <option value="chauffage">Chauffage</option>
+                    <option value="clim">Climatisation</option>
+                    <option value="conseils">Conseils</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Date de publication</label>
+                  <input type="date" id="artDate" />
+                </div>
+              </div>
+              <div class="form-group"><label>Extrait</label><textarea rows="3" placeholder="Résumé de l'article (pour les aperçus)" id="artExcerpt"></textarea></div>
+              <div class="form-group"><label>Contenu complet</label><textarea rows="8" placeholder="Contenu de l'article..." id="artContent"></textarea></div>
+              <div style="display:flex;gap:12px">
+                <button class="btn btn-primary" onclick="saveArticle()">Publier l'article</button>
+                <button class="btn btn-outline" onclick="document.getElementById('blogEditorPanel').style.display='none'">Annuler</button>
+              </div>
+            </div>
+
+            <table class="admin-table">
+              <thead>
+                <tr><th>Titre</th><th>Catégorie</th><th>Date</th><th>Statut</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Comment détecter une fuite d'eau cachée ?</strong></td>
+                  <td><span class="badge badge-info">Plomberie</span></td>
+                  <td>15/03/2025</td>
+                  <td><span class="badge badge-success">Publié</span></td>
+                  <td><div style="display:flex;gap:6px"><button class="btn btn-outline" style="padding:4px 10px;font-size:0.78rem">Modifier</button><button class="btn btn-outline" style="padding:4px 10px;font-size:0.78rem;color:var(--urgence);border-color:var(--urgence)">Supprimer</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>Entretien chaudière : tout ce que vous devez savoir</strong></td>
+                  <td><span class="badge badge-warning">Chauffage</span></td>
+                  <td>08/03/2025</td>
+                  <td><span class="badge badge-success">Publié</span></td>
+                  <td><div style="display:flex;gap:6px"><button class="btn btn-outline" style="padding:4px 10px;font-size:0.78rem">Modifier</button><button class="btn btn-outline" style="padding:4px 10px;font-size:0.78rem;color:var(--urgence);border-color:var(--urgence)">Supprimer</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TEXTES TAB -->
+        <div id="tab-textes" class="tab-content">
+          <div class="admin-card">
+            <h3 style="font-weight:700;margin-bottom:24px">Modifier les textes du site</h3>
+            <div class="admin-tabs">
+              <button class="admin-tab active" onclick="switchTextTab('accueil',this)">Accueil</button>
+              <button class="admin-tab" onclick="switchTextTab('contact',this)">Contact</button>
+              <button class="admin-tab" onclick="switchTextTab('about',this)">À propos</button>
+            </div>
+            <div id="textTab-accueil" class="tab-content active">
+              <div class="form-group"><label>Titre principal</label><input type="text" value="Votre expert plomberie, chauffage & climatisation" /></div>
+              <div class="form-group"><label>Sous-titre</label><textarea rows="3">Dépannage 24h/24, installation et maintenance par des professionnels certifiés. Devis gratuit et intervention rapide dans toute la région.</textarea></div>
+              <div class="form-group"><label>Badge hero</label><input type="text" value="⚡ Intervention rapide garantie" /></div>
+              <button class="btn btn-primary" onclick="alert('Textes sauvegardés !')">Sauvegarder les textes</button>
+            </div>
+            <div id="textTab-contact" class="tab-content">
+              <div class="form-group"><label>Téléphone principal</label><input type="text" value="+33 6 12 34 56 78" /></div>
+              <div class="form-group"><label>Email</label><input type="text" value="contact@talbifluid.fr" /></div>
+              <div class="form-group"><label>Zone d'intervention</label><input type="text" value="Île-de-France et région parisienne" /></div>
+              <div class="form-group"><label>Horaires</label><input type="text" value="Lun–Ven 8h–19h · Sam 9h–17h · Urgences 24/7" /></div>
+              <button class="btn btn-primary" onclick="alert('Coordonnées sauvegardées !')">Sauvegarder</button>
+            </div>
+            <div id="textTab-about" class="tab-content">
+              <div class="form-group"><label>Texte "Qui sommes-nous"</label><textarea rows="6">TALBI'FLUID est une entreprise familiale fondée il y a 15 ans avec une vision claire : offrir un service de plomberie et de chauffage d'excellence...</textarea></div>
+              <button class="btn btn-primary" onclick="alert('Texte sauvegardé !')">Sauvegarder</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RDV TAB -->
+        <div id="tab-rdv" class="tab-content">
+          <div class="admin-card">
+            <h3 style="font-weight:700;margin-bottom:20px">Rendez-vous de la semaine</h3>
+            <table class="admin-table">
+              <thead>
+                <tr><th>Date</th><th>Heure</th><th>Client</th><th>Service</th><th>Adresse</th><th>Statut</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>18/03/2025</td><td>09h00</td>
+                  <td><strong>Jean B.</strong><br><span style="font-size:0.8rem;color:var(--text-light)">06 55 66 77 88</span></td>
+                  <td>Entretien chaudière</td>
+                  <td style="font-size:0.85rem">12 rue de la Paix, Paris 75001</td>
+                  <td><span class="badge badge-success">Confirmé</span></td>
+                </tr>
+                <tr>
+                  <td>19/03/2025</td><td>14h00</td>
+                  <td><strong>Sophie M.</strong><br><span style="font-size:0.8rem;color:var(--text-light)">06 99 88 77 66</span></td>
+                  <td>Installation clim</td>
+                  <td style="font-size:0.85rem">45 av. Victor Hugo, Paris 75016</td>
+                  <td><span class="badge badge-info">À confirmer</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /admin-content -->
+    </div><!-- /admin-main -->
+  </div><!-- /admin-layout -->
+</div><!-- /adminApp -->
+
+<script>
+  // ===== AUTH =====
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = 'admin123';
+
+  function doLogin(e) {
+    e.preventDefault();
+    const u = document.getElementById('loginUser').value;
+    const p = document.getElementById('loginPass').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      sessionStorage.setItem('talbi-admin', '1');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminApp').style.display = 'block';
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+
+  function doLogout() {
+    sessionStorage.removeItem('talbi-admin');
+    document.getElementById('adminApp').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+  }
+
+  // Auto-login if session active
+  if (sessionStorage.getItem('talbi-admin')) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+  }
+
+  // ===== TABS =====
+  const titles = {
+    dashboard: 'Tableau de bord',
+    demandes: 'Demandes clients',
+    avis: 'Avis clients',
+    rdv: 'Rendez-vous',
+    services: 'Services & Tarifs',
+    blog: 'Articles Blog',
+    textes: 'Textes du site'
+  };
+
+  function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
+    const tab = document.getElementById('tab-' + name);
+    if (tab) tab.classList.add('active');
+    document.getElementById('adminTitle').textContent = titles[name] || name;
+    event.currentTarget && event.currentTarget.classList.add('active');
+  }
+
+  function switchTextTab(name, btn) {
+    document.querySelectorAll('[id^="textTab-"]').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('textTab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ===== ACTIONS =====
+  function changeStatus(btn, newStatus, badgeClass) {
+    const row = btn.closest('tr');
+    const badge = row.querySelector('.badge');
+    badge.className = 'badge ' + badgeClass;
+    badge.textContent = newStatus;
+    btn.closest('div').innerHTML = '<span style="color:var(--text-light);font-size:0.85rem">Traité</span>';
+  }
+
+  function approveReview(btn) {
+    btn.closest('div[style]').closest('div').innerHTML = '<p style="color:#166534;font-weight:600;padding:16px">✅ Avis publié avec succès</p>';
+  }
+  function rejectReview(btn) {
+    btn.closest('div[style]').closest('div').remove();
+  }
+
+  function saveRow(id) {
+    const row = document.getElementById(id);
+    const inputs = row.querySelectorAll('input, select');
+    let saved = [];
+    inputs.forEach(i => saved.push(i.value));
+    alert('Tarif sauvegardé :\n' + saved.join(' | '));
+  }
+
+  function addService() {
+    const tbody = document.querySelector('#servicesTable tbody');
+    const id = 'srow-' + Date.now();
+    const row = document.createElement('tr');
+    row.id = id;
+    row.innerHTML = `
+      <td><input type="text" placeholder="Nom du service" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:150px" /></td>
+      <td><select style="border:1px solid var(--border);padding:6px 10px;border-radius:6px"><option>Plomberie</option><option>Chauffage</option><option>Climatisation</option><option>Urgence</option></select></td>
+      <td><input type="number" placeholder="0" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:80px" /></td>
+      <td><input type="text" placeholder="Description" style="border:1px solid var(--border);padding:6px 10px;border-radius:6px;width:200px" /></td>
+      <td><button class="btn btn-primary" style="padding:4px 12px;font-size:0.8rem" onclick="saveRow('${id}')">Sauvegarder</button></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function showBlogEditor() {
+    const panel = document.getElementById('blogEditorPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('artDate').value = new Date().toISOString().split('T')[0];
+  }
+
+  function saveArticle() {
+    const title = document.getElementById('artTitle').value;
+    if (!title) { alert('Le titre est obligatoire'); return; }
+    alert('Article "' + title + '" publié avec succès !');
+    document.getElementById('blogEditorPanel').style.display = 'none';
+    document.getElementById('artTitle').value = '';
+    document.getElementById('artContent').value = '';
+    document.getElementById('artExcerpt').value = '';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Services TALBI'FLUID : plomberie, chauffage, climatisation. Installation, dépannage et maintenance par des professionnels certifiés." />
+  <title>Nos Services — TALBI'FLUID</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HEADER (identique à index) -->
+  <header class="header" id="header">
+    <div class="header-top">
+      <div class="container">
+        <div class="header-top-inner">
+          <div class="header-contact-info">
+            <a href="tel:+33612345678" class="header-phone"><span class="icon">📞</span> +33 6 12 34 56 78</a>
+            <span class="header-badge">Disponible 24h/24 · 7j/7</span>
+          </div>
+          <div class="lang-switcher">
+            <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+            <button class="lang-btn" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" onclick="setLang('es')">ES</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar" id="navbar">
+      <div class="container">
+        <div class="nav-inner">
+          <a href="index.html" class="logo">
+            <div class="logo-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="18" fill="#1a73e8"/>
+                <path d="M10 26 C10 26 12 14 18 14 C24 14 26 26 26 26" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <circle cx="18" cy="10" r="3" fill="white"/>
+                <rect x="16" y="22" width="4" height="6" rx="2" fill="white"/>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="logo-main">TALBI<span class="logo-accent">'FLUID</span></span>
+              <span class="logo-sub">Plomberie · Chauffage · Climatisation</span>
+            </div>
+          </a>
+          <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html" class="nav-link">Accueil</a></li>
+            <li><a href="services.html" class="nav-link active">Services</a></li>
+            <li><a href="urgence.html" class="nav-link nav-urgence">🚨 Urgence</a></li>
+            <li><a href="about.html" class="nav-link">À propos</a></li>
+            <li><a href="avis.html" class="nav-link">Avis</a></li>
+            <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <li><a href="contact.html" class="nav-link nav-contact-btn">Contact</a></li>
+          </ul>
+          <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>Nos Services</h1>
+      <p>Solutions complètes en plomberie, chauffage et climatisation par des experts certifiés</p>
+    </div>
+  </section>
+
+  <!-- PLOMBERIE -->
+  <section class="section" id="plomberie">
+    <div class="container">
+      <div class="service-detail-wrapper">
+        <div class="service-detail-content">
+          <span class="section-tag">🔧 Plomberie</span>
+          <h2 class="section-title">Plomberie — Installation & Dépannage</h2>
+          <p style="color:var(--text-light);margin-bottom:28px;font-size:1.05rem;line-height:1.8">
+            De la simple réparation de fuite à la rénovation complète de salle de bain, notre équipe intervient rapidement avec du matériel professionnel. Nous travaillons avec toutes les marques et tous les types d'installations.
+          </p>
+          <div class="service-features-grid">
+            <div class="feature-item"><span class="feature-icon">💧</span><div><strong>Fuite d'eau</strong><p>Détection et réparation de fuites apparentes ou cachées sous carrelage</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🚿</span><div><strong>Installation sanitaire</strong><p>Pose de douche, baignoire, WC, lavabo, évier et robinetterie</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🔩</span><div><strong>Débouchage</strong><p>Débouchage haute pression de canalisations, WC et éviers bouchés</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🏠</span><div><strong>Rénovation salle de bain</strong><p>Rénovation complète clé en main avec carrelage et plomberie</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🌡️</span><div><strong>Chauffe-eau</strong><p>Installation et remplacement de chauffe-eau électrique ou thermodynamique</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🔍</span><div><strong>Diagnostic complet</strong><p>Inspection par caméra endoscopique de vos canalisations</p></div></div>
+          </div>
+          <a href="contact.html" class="btn btn-primary btn-xl" style="margin-top:28px">Demander un devis plomberie</a>
+        </div>
+        <div class="service-detail-image">
+          <div class="service-image-placeholder" style="background:linear-gradient(135deg,#e8f4fd,#bfdbfe)">
+            <span style="font-size:6rem">🔧</span>
+            <p style="font-weight:700;color:var(--primary);margin-top:16px">Plomberie professionnelle</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAUFFAGE -->
+  <section class="section section-gray" id="chauffage">
+    <div class="container">
+      <div class="service-detail-wrapper reverse">
+        <div class="service-detail-image">
+          <div class="service-image-placeholder" style="background:linear-gradient(135deg,#fff3e0,#fed7aa)">
+            <span style="font-size:6rem">🔥</span>
+            <p style="font-weight:700;color:#ea580c;margin-top:16px">Chauffage professionnel</p>
+          </div>
+        </div>
+        <div class="service-detail-content">
+          <span class="section-tag">🔥 Chauffage</span>
+          <h2 class="section-title">Chauffage — Installation & Maintenance</h2>
+          <p style="color:var(--text-light);margin-bottom:28px;font-size:1.05rem;line-height:1.8">
+            Spécialistes en chaudières à condensation, pompes à chaleur et systèmes de chauffage économiques. Intervention certifiée QualiGaz pour votre sécurité.
+          </p>
+          <div class="service-features-grid">
+            <div class="feature-item"><span class="feature-icon">🏭</span><div><strong>Chaudière gaz</strong><p>Installation et remplacement de chaudières à condensation haute performance</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🌡️</span><div><strong>Radiateurs</strong><p>Pose et remplacement de radiateurs acier, aluminium ou fonte</p></div></div>
+            <div class="feature-item"><span class="feature-icon">♨️</span><div><strong>Plancher chauffant</strong><p>Installation de plancher chauffant hydraulique ou électrique</p></div></div>
+            <div class="feature-item"><span class="feature-icon">📋</span><div><strong>Entretien annuel</strong><p>Contrat d'entretien obligatoire avec attestation pour votre assurance</p></div></div>
+            <div class="feature-item"><span class="feature-icon">⚙️</span><div><strong>Dépannage chaudière</strong><p>Intervention rapide en cas de panne, 24h/24 en urgence</p></div></div>
+            <div class="feature-item"><span class="feature-icon">📊</span><div><strong>Thermostat connecté</strong><p>Installation de thermostats intelligents pour économiser l'énergie</p></div></div>
+          </div>
+          <a href="contact.html" class="btn btn-primary btn-xl" style="margin-top:28px">Demander un devis chauffage</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIMATISATION -->
+  <section class="section" id="climatisation">
+    <div class="container">
+      <div class="service-detail-wrapper">
+        <div class="service-detail-content">
+          <span class="section-tag">❄️ Climatisation</span>
+          <h2 class="section-title">Climatisation — Installation & Entretien</h2>
+          <p style="color:var(--text-light);margin-bottom:28px;font-size:1.05rem;line-height:1.8">
+            Installation de systèmes de climatisation réversibles pour le confort été comme hiver. Certifiés pour la manipulation des fluides frigorigènes.
+          </p>
+          <div class="service-features-grid">
+            <div class="feature-item"><span class="feature-icon">❄️</span><div><strong>Climatiseur split</strong><p>Installation de climatiseurs mono ou multi-split pour particuliers et professionnels</p></div></div>
+            <div class="feature-item"><span class="feature-icon">♻️</span><div><strong>Pompe à chaleur air/air</strong><p>Systèmes réversibles pour chauffer l'hiver et rafraîchir l'été</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🌀</span><div><strong>VMC double flux</strong><p>Ventilation mécanique contrôlée pour un air sain en toutes saisons</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🛠️</span><div><strong>Maintenance préventive</strong><p>Nettoyage des filtres, contrôle des fluides, vérification du circuit</p></div></div>
+            <div class="feature-item"><span class="feature-icon">🏢</span><div><strong>Solutions pro</strong><p>Climatisation de bureaux, commerces et locaux industriels</p></div></div>
+            <div class="feature-item"><span class="feature-icon">💰</span><div><strong>Aides & subventions</strong><p>Accompagnement pour obtenir MaPrimeRénov' et les CEE</p></div></div>
+          </div>
+          <a href="contact.html" class="btn btn-primary btn-xl" style="margin-top:28px">Demander un devis climatisation</a>
+        </div>
+        <div class="service-detail-image">
+          <div class="service-image-placeholder" style="background:linear-gradient(135deg,#e3f2fd,#bfdbfe)">
+            <span style="font-size:6rem">❄️</span>
+            <p style="font-weight:700;color:var(--primary);margin-top:16px">Climatisation professionnelle</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="section section-gray">
+    <div class="container" style="text-align:center">
+      <h2 class="section-title">Besoin d'un devis ?</h2>
+      <p style="color:var(--text-light);margin-bottom:32px;font-size:1.05rem">Contactez-nous pour une estimation gratuite et sans engagement</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="tel:+33612345678" class="btn btn-primary btn-xl">📞 +33 6 12 34 56 78</a>
+        <a href="contact.html" class="btn btn-outline btn-xl">Formulaire de contact</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 TALBI'FLUID — Tous droits réservés</p>
+        <div class="footer-legal">
+          <a href="mentions-legales.html">Mentions légales</a>
+          <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="tel:+33612345678" class="float-call">📞</a>
+
+  <style>
+    .service-detail-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+    .service-detail-wrapper.reverse { }
+    .service-image-placeholder { border-radius:20px; height:380px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .service-features-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .feature-item { display:flex; gap:14px; align-items:flex-start; }
+    .feature-icon { font-size:1.6rem; flex-shrink:0; }
+    .feature-item strong { display:block; font-weight:700; margin-bottom:4px; }
+    .feature-item p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+    @media(max-width:768px) {
+      .service-detail-wrapper { grid-template-columns:1fr; gap:32px; }
+      .service-features-grid { grid-template-columns:1fr; }
+    }
+  </style>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
