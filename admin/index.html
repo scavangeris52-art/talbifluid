@@ -72,6 +72,7 @@
         <a class="admin-nav-item" onclick="showTab('textes')">✏️ Textes du site</a>
 
         <div class="admin-nav-section">Compte</div>
+        <a class="admin-nav-item" onclick="showTab('parametres')">⚙️ Paramètres du site</a>
         <a class="admin-nav-item" onclick="doLogout()">🚪 Déconnexion</a>
       </nav>
     </aside>
@@ -353,6 +354,110 @@
           </div>
         </div>
 
+        <!-- PARAMÈTRES TAB -->
+        <div id="tab-parametres" class="tab-content">
+
+          <!-- Configuration JSONBin -->
+          <div class="admin-card" style="margin-bottom:20px;border:2px solid #fbbf24;background:#fffbeb">
+            <h3 style="font-weight:700;margin-bottom:8px">⚙️ Configuration JSONBin <span style="font-size:0.75rem;font-weight:400;color:#92400e">(à faire une seule fois)</span></h3>
+            <p style="font-size:0.85rem;color:#92400e;margin-bottom:16px">
+              Pour que vos modifications soient visibles par tous les visiteurs, vous avez besoin d'un compte gratuit sur
+              <a href="https://jsonbin.io" target="_blank" style="color:#1a73e8;text-decoration:underline">jsonbin.io</a>.
+              <br/>1. Créez un compte gratuit → 2. Copiez votre <strong>Master Key</strong> → 3. Cliquez "Créer le bin" ci-dessous.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;flex-wrap:wrap">
+              <div class="form-group" style="margin:0">
+                <label style="font-size:0.8rem">Master Key JSONBin</label>
+                <input type="password" id="cfg-masterkey" placeholder="$2a$10$..." style="font-size:0.85rem" />
+              </div>
+              <div class="form-group" style="margin:0">
+                <label style="font-size:0.8rem">Bin ID <span style="color:#94a3b8">(rempli automatiquement)</span></label>
+                <input type="text" id="cfg-binid" placeholder="64abc123..." style="font-size:0.85rem" />
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-primary" onclick="setupJsonBin()" style="white-space:nowrap">🚀 Créer le bin</button>
+                <button class="btn btn-outline" onclick="saveJsonBinConfig()" style="white-space:nowrap">💾 Sauvegarder</button>
+              </div>
+            </div>
+            <p id="cfg-status" style="margin-top:10px;font-size:0.82rem;display:none"></p>
+          </div>
+
+          <!-- Coordonnées & Horaires -->
+          <div class="admin-card" style="margin-bottom:20px">
+            <h3 style="font-weight:700;margin-bottom:20px">📞 Coordonnées & Horaires</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="form-group">
+                <label>Téléphone principal</label>
+                <input type="text" id="s-phone" placeholder="+33 7 81 62 61 23" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="s-email" placeholder="contact@talbifluid.fr" />
+              </div>
+              <div class="form-group">
+                <label>Horaires (affiché sur le site)</label>
+                <input type="text" id="s-hours" placeholder="Lun–Ven 8h–19h · Sam 9h–17h · Urgences 24/7" />
+              </div>
+              <div class="form-group">
+                <label>Mention urgences footer</label>
+                <input type="text" id="s-urgenceHours" placeholder="Urgences 24h/24 · 7j/7" />
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label>Zone d'intervention</label>
+                <input type="text" id="s-zone" placeholder="Département de l'Hérault" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Texte Hero -->
+          <div class="admin-card" style="margin-bottom:20px">
+            <h3 style="font-weight:700;margin-bottom:20px">🏠 Texte page d'accueil (Hero)</h3>
+            <div class="form-group">
+              <label>Titre ligne 1</label>
+              <input type="text" id="s-heroTitle" placeholder="Votre expert plomberie," />
+            </div>
+            <div class="form-group">
+              <label>Titre ligne 2 <span style="color:#1a73e8">(en bleu)</span></label>
+              <input type="text" id="s-heroTitleLine2" placeholder="chauffage & climatisation" />
+            </div>
+            <div class="form-group">
+              <label>Sous-titre</label>
+              <textarea id="s-heroSubtitle" rows="3" placeholder="Dépannage 24h/24..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Bannière urgence</label>
+              <input type="text" id="s-urgenceBanner" placeholder="Fuite d'eau, dégât des eaux..." />
+            </div>
+          </div>
+
+          <!-- Tarifs -->
+          <div class="admin-card" style="margin-bottom:20px">
+            <h3 style="font-weight:700;margin-bottom:20px">💰 Tarifs</h3>
+            <div style="display:grid;gap:16px">
+              <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:12px;align-items:end;padding:12px;background:#f8fafc;border-radius:8px">
+                <div class="form-group" style="margin:0"><label>Nom service 1</label><input type="text" id="s-price1Name" /></div>
+                <div class="form-group" style="margin:0"><label>Prix (€)</label><input type="number" id="s-price1Amount" /></div>
+                <div class="form-group" style="margin:0"><label>Description</label><input type="text" id="s-price1Desc" /></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:12px;align-items:end;padding:12px;background:#f8fafc;border-radius:8px">
+                <div class="form-group" style="margin:0"><label>Nom service 2</label><input type="text" id="s-price2Name" /></div>
+                <div class="form-group" style="margin:0"><label>Prix (€)</label><input type="number" id="s-price2Amount" /></div>
+                <div class="form-group" style="margin:0"><label>Description</label><input type="text" id="s-price2Desc" /></div>
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:12px;align-items:end;padding:12px;background:#f8fafc;border-radius:8px">
+                <div class="form-group" style="margin:0"><label>Nom service 3</label><input type="text" id="s-price3Name" /></div>
+                <div class="form-group" style="margin:0"><label>Prix (€)</label><input type="number" id="s-price3Amount" /></div>
+                <div class="form-group" style="margin:0"><label>Description</label><input type="text" id="s-price3Desc" /></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;padding:16px;font-size:1rem" onclick="saveAllSettings()">
+            💾 Enregistrer tous les paramètres → visible immédiatement sur le site
+          </button>
+          <p id="save-status" style="text-align:center;margin-top:12px;font-size:0.9rem;display:none"></p>
+        </div>
+
         <!-- RDV TAB -->
         <div id="tab-rdv" class="tab-content">
           <div class="admin-card">
@@ -387,6 +492,101 @@
 </div><!-- /adminApp -->
 
 <script>
+  // ===== AUTH =====
+  // ===== PARAMÈTRES =====
+  const FIELDS = ['phone','email','hours','urgenceHours','zone','heroTitle','heroTitleLine2','heroSubtitle','urgenceBanner','price1Name','price1Amount','price1Desc','price2Name','price2Amount','price2Desc','price3Name','price3Amount','price3Desc'];
+
+  const DEFAULTS = {
+    phone:'+33 7 81 62 61 23', email:'contact@talbifluid.fr',
+    hours:'Lun–Ven 8h–19h · Sam 9h–17h · Urgences 24/7', urgenceHours:'Urgences 24h/24 · 7j/7',
+    zone:"Département de l'Hérault", heroTitle:'Votre expert plomberie,',
+    heroTitleLine2:'chauffage & climatisation',
+    heroSubtitle:"Dépannage 24h/24, installation et maintenance par des professionnels certifiés. Devis gratuit et intervention rapide dans toute la région.",
+    urgenceBanner:"Fuite d'eau, dégât des eaux, panne de chauffage — nous intervenons en moins d'1h",
+    price1Name:'Détection de fuite', price1Amount:'49', price1Desc:'Diagnostic complet avec rapport',
+    price2Name:'Entretien chaudière', price2Amount:'89', price2Desc:'Révision complète + attestation',
+    price3Name:'Installation climatisation', price3Amount:'799', price3Desc:'Fourniture + pose + mise en service'
+  };
+
+  async function loadSettingsIntoForm() {
+    const binId = localStorage.getItem('tf_bin_id') || '';
+    const masterKey = localStorage.getItem('tf_master_key') || '';
+    document.getElementById('cfg-binid').value = binId;
+    document.getElementById('cfg-masterkey').value = masterKey;
+
+    let settings = { ...DEFAULTS };
+    if (binId) {
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, { headers: { 'X-Bin-Meta': 'false' } });
+        if (res.ok) settings = { ...DEFAULTS, ...await res.json() };
+      } catch {}
+    }
+    FIELDS.forEach(f => {
+      const el = document.getElementById('s-' + f);
+      if (el) el.value = settings[f] || DEFAULTS[f] || '';
+    });
+  }
+
+  async function setupJsonBin() {
+    const masterKey = document.getElementById('cfg-masterkey').value.trim();
+    if (!masterKey) { alert('Entrez votre Master Key JSONBin.'); return; }
+    const status = document.getElementById('cfg-status');
+    status.style.display = 'block'; status.style.color = '#1a73e8'; status.textContent = '⏳ Création du bin en cours...';
+    try {
+      const res = await fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey, 'X-Bin-Name': 'talbifluid-settings', 'X-Bin-Private': 'false' },
+        body: JSON.stringify(DEFAULTS)
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const binId = data.metadata.id;
+      localStorage.setItem('tf_bin_id', binId);
+      localStorage.setItem('tf_master_key', masterKey);
+      document.getElementById('cfg-binid').value = binId;
+      status.style.color = '#16a34a'; status.textContent = '✅ Bin créé ! ID : ' + binId + ' — Configuration sauvegardée.';
+    } catch {
+      status.style.color = '#dc2626'; status.textContent = '❌ Erreur. Vérifiez votre Master Key.';
+    }
+  }
+
+  function saveJsonBinConfig() {
+    const masterKey = document.getElementById('cfg-masterkey').value.trim();
+    const binId = document.getElementById('cfg-binid').value.trim();
+    if (!masterKey || !binId) { alert('Remplissez les deux champs.'); return; }
+    localStorage.setItem('tf_bin_id', binId);
+    localStorage.setItem('tf_master_key', masterKey);
+    const status = document.getElementById('cfg-status');
+    status.style.display = 'block'; status.style.color = '#16a34a'; status.textContent = '✅ Configuration sauvegardée.';
+  }
+
+  async function saveAllSettings() {
+    const settings = {};
+    FIELDS.forEach(f => {
+      const el = document.getElementById('s-' + f);
+      if (el) settings[f] = el.value;
+    });
+    const binId = localStorage.getItem('tf_bin_id');
+    const masterKey = localStorage.getItem('tf_master_key');
+    const statusEl = document.getElementById('save-status');
+    statusEl.style.display = 'block'; statusEl.style.color = '#1a73e8'; statusEl.textContent = '⏳ Sauvegarde en cours...';
+    if (!binId || !masterKey) {
+      statusEl.style.color = '#dc2626'; statusEl.textContent = '❌ JSONBin non configuré. Allez dans la section configuration ci-dessus.';
+      return;
+    }
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey },
+        body: JSON.stringify(settings)
+      });
+      if (!res.ok) throw new Error();
+      statusEl.style.color = '#16a34a'; statusEl.textContent = '✅ Paramètres sauvegardés ! Visibles immédiatement sur le site.';
+    } catch {
+      statusEl.style.color = '#dc2626'; statusEl.textContent = '❌ Erreur. Vérifiez votre connexion et votre Master Key.';
+    }
+  }
+
   // ===== AUTH =====
   const ADMIN_USER = 'talbifluid';
   const ADMIN_PASS = 'Talbi@2025!';
@@ -426,7 +626,8 @@
     rdv: 'Rendez-vous',
     services: 'Services & Tarifs',
     blog: 'Articles Blog',
-    textes: 'Textes du site'
+    textes: 'Textes du site',
+    parametres: '⚙️ Paramètres du site'
   };
 
   function showTab(name) {
@@ -436,6 +637,7 @@
     if (tab) tab.classList.add('active');
     document.getElementById('adminTitle').textContent = titles[name] || name;
     event.currentTarget && event.currentTarget.classList.add('active');
+    if (name === 'parametres') loadSettingsIntoForm();
   }
 
   function switchTextTab(name, btn) {

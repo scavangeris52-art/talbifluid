@@ -59,7 +59,7 @@
       <div class="container">
         <div class="header-top-inner">
           <div class="header-contact-info">
-            <a href="tel:+33781626123" class="header-phone">
+            <a href="tel:+33781626123" class="header-phone" data-s="phone">
               <span class="icon">📞</span> +33 7 81 62 61 23
             </a>
             <span class="header-badge">Disponible 24h/24 · 7j/7</span>
@@ -115,11 +115,11 @@
     <div class="container">
       <div class="hero-content">
         <div class="hero-badge" data-i18n="hero-badge">⚡ Intervention rapide garantie</div>
-        <h1 class="hero-title" data-i18n="hero-title">
-          Votre expert plomberie,<br/>
-          <span class="text-accent">chauffage & climatisation</span>
+        <h1 class="hero-title">
+          <span data-s="heroTitle">Votre expert plomberie,</span><br/>
+          <span class="text-accent" data-s="heroTitleLine2">chauffage & climatisation</span>
         </h1>
-        <p class="hero-subtitle" data-i18n="hero-subtitle">
+        <p class="hero-subtitle" data-s="heroSubtitle">
           Dépannage 24h/24, installation et maintenance par des professionnels certifiés.
           Devis gratuit et intervention rapide dans toute la région.
         </p>
@@ -168,7 +168,7 @@
         <div class="urgence-icon">🚨</div>
         <div class="urgence-text">
           <strong data-i18n="urgence-title">Urgence plomberie ?</strong>
-          <span data-i18n="urgence-sub">Fuite d'eau, dégât des eaux, panne de chauffage — nous intervenons en moins d'1h</span>
+          <span data-s="urgenceBanner">Fuite d'eau, dégât des eaux, panne de chauffage — nous intervenons en moins d'1h</span>
         </div>
         <a href="tel:+33781626123" class="btn btn-urgence" data-i18n="urgence-btn">
           📞 Appel d'urgence gratuit
@@ -308,24 +308,24 @@
         <!-- Injecté dynamiquement via JS / admin -->
         <div class="pricing-card">
           <div class="pricing-icon">🔧</div>
-          <h3 class="pricing-name" data-i18n="price1-name">Détection de fuite</h3>
-          <div class="pricing-price"><span class="price-amount">49</span><span class="price-unit">€</span></div>
-          <p class="pricing-desc" data-i18n="price1-desc">Diagnostic complet avec rapport</p>
+          <h3 class="pricing-name" data-s="price1Name">Détection de fuite</h3>
+          <div class="pricing-price"><span class="price-amount" data-s="price1Amount">49</span><span class="price-unit">€</span></div>
+          <p class="pricing-desc" data-s="price1Desc">Diagnostic complet avec rapport</p>
           <a href="contact.html" class="btn btn-primary" data-i18n="pricing-cta">Demander un devis</a>
         </div>
         <div class="pricing-card pricing-card-featured">
           <div class="pricing-badge" data-i18n="pricing-popular">Le plus demandé</div>
           <div class="pricing-icon">🔥</div>
-          <h3 class="pricing-name" data-i18n="price2-name">Entretien chaudière</h3>
-          <div class="pricing-price"><span class="price-amount">89</span><span class="price-unit">€</span></div>
-          <p class="pricing-desc" data-i18n="price2-desc">Révision complète + attestation</p>
+          <h3 class="pricing-name" data-s="price2Name">Entretien chaudière</h3>
+          <div class="pricing-price"><span class="price-amount" data-s="price2Amount">89</span><span class="price-unit">€</span></div>
+          <p class="pricing-desc" data-s="price2Desc">Révision complète + attestation</p>
           <a href="contact.html" class="btn btn-primary" data-i18n="pricing-cta">Demander un devis</a>
         </div>
         <div class="pricing-card">
           <div class="pricing-icon">❄️</div>
-          <h3 class="pricing-name" data-i18n="price3-name">Installation climatisation</h3>
-          <div class="pricing-price"><span class="price-amount">799</span><span class="price-unit">€</span></div>
-          <p class="pricing-desc" data-i18n="price3-desc">Fourniture + pose + mise en service</p>
+          <h3 class="pricing-name" data-s="price3Name">Installation climatisation</h3>
+          <div class="pricing-price"><span class="price-amount" data-s="price3Amount">799</span><span class="price-unit">€</span></div>
+          <p class="pricing-desc" data-s="price3Desc">Fourniture + pose + mise en service</p>
           <a href="contact.html" class="btn btn-primary" data-i18n="pricing-cta">Demander un devis</a>
         </div>
       </div>
@@ -411,8 +411,8 @@
             <div class="contact-item">
               <span class="contact-icon">🕐</span>
               <div>
-                <strong data-i18n="contact-hours-label">Horaires</strong>
-                <span data-i18n="contact-hours">Lun–Ven 8h–19h · Sam 9h–17h · Urgences 24/7</span>
+                <strong>Horaires</strong>
+                <span data-s="hours">Lun–Ven 8h–19h · Sam 9h–17h · Urgences 24/7</span>
               </div>
             </div>
           </div>
@@ -638,7 +638,7 @@
           <p>📞 <a href="tel:+33781626123">+33 7 81 62 61 23</a></p>
           <p>📧 <a href="mailto:contact@talbifluid.fr">contact@talbifluid.fr</a></p>
           <p>📍 <span data-i18n="contact-address">Département de l'Hérault</span></p>
-          <p>🕐 <span data-i18n="footer-urgence-hours">Urgences 24h/24 · 7j/7</span></p>
+          <p>🕐 <span data-s="urgenceHours">Urgences 24h/24 · 7j/7</span></p>
         </div>
       </div>
 
@@ -658,6 +658,7 @@
     📞
   </a>
 
+  <script src="js/settings.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/main.js"></script>
   <script>
