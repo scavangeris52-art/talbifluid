@@ -9,8 +9,11 @@
     "install-all": "npm install && echo 'Backend prêt !'"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.3",
+    "jsonwebtoken": "^9.1.2",
     "nodemailer": "^6.9.9"
   },
   "devDependencies": {

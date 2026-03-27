@@ -67,6 +67,7 @@
         <a class="admin-nav-item" onclick="showTab('rdv')">📅 Rendez-vous</a>
 
         <div class="admin-nav-section">Contenu</div>
+        <a class="admin-nav-item" onclick="showTab('realisations')">📸 Réalisations Avant/Après</a>
         <a class="admin-nav-item" onclick="showTab('services')">🔧 Services & Tarifs</a>
         <a class="admin-nav-item" onclick="showTab('blog')">📝 Articles Blog</a>
         <a class="admin-nav-item" onclick="showTab('textes')">✏️ Textes du site</a>
@@ -265,6 +266,49 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+        <!-- RÉALISATIONS AVANT/APRÈS TAB -->
+        <div id="tab-realisations" class="tab-content">
+
+          <!-- Config bin photos -->
+          <div class="admin-card" style="margin-bottom:20px;border:2px solid #a855f7;background:#faf5ff">
+            <h3 style="font-weight:700;margin-bottom:8px">📦 Stockage des photos <span style="font-size:0.75rem;font-weight:400;color:#6b21a8">(à faire une seule fois)</span></h3>
+            <p style="font-size:0.85rem;color:#6b21a8;margin-bottom:16px">
+              Les photos sont stockées dans un bin JSONBin séparé. Utilisez la même Master Key que pour les paramètres.
+              Si vous avez déjà créé votre bin dans l'onglet Paramètres, cliquez simplement sur "Créer le bin photos".
+            </p>
+            <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+              <div class="form-group" style="margin:0">
+                <label style="font-size:0.8rem">Bin ID photos <span style="color:#94a3b8">(rempli automatiquement)</span></label>
+                <input type="text" id="photos-binid" placeholder="64abc123..." style="font-size:0.85rem" />
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-primary" onclick="setupPhotosBin()" style="white-space:nowrap;background:#a855f7;border-color:#a855f7">🚀 Créer le bin photos</button>
+                <button class="btn btn-outline" onclick="savePhotosBinConfig()" style="white-space:nowrap">💾 Sauvegarder</button>
+              </div>
+            </div>
+            <p id="photos-cfg-status" style="margin-top:10px;font-size:0.82rem;display:none"></p>
+          </div>
+
+          <!-- Liste des réalisations -->
+          <div class="admin-card" style="margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h3 style="font-weight:700">Mes réalisations</h3>
+                <p style="font-size:0.82rem;color:var(--text-light);margin-top:4px">
+                  Les photos sont automatiquement compressées. Taille recommandée : max 1200px, moins de 500 Ko.
+                </p>
+              </div>
+              <button class="btn btn-primary" onclick="addRealisation()">+ Ajouter une réalisation</button>
+            </div>
+            <div id="realisations-list"></div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;padding:16px;font-size:1rem" onclick="saveRealisations()">
+            💾 Enregistrer les réalisations → visible immédiatement sur le site
+          </button>
+          <p id="real-save-status" style="text-align:center;margin-top:12px;font-size:0.9rem;display:none"></p>
         </div>
 
         <!-- BLOG TAB -->
@@ -509,21 +553,31 @@
   };
 
   async function loadSettingsIntoForm() {
-    const binId = localStorage.getItem('tf_bin_id') || '';
+    const binId     = localStorage.getItem('tf_bin_id') || '';
     const masterKey = localStorage.getItem('tf_master_key') || '';
-    document.getElementById('cfg-binid').value = binId;
+    document.getElementById('cfg-binid').value     = binId;
     document.getElementById('cfg-masterkey').value = masterKey;
 
+    /* Priorité : 1. JSONBin  2. cache localStorage  3. valeurs par défaut */
     let settings = { ...DEFAULTS };
+
+    /* 2. Cache localStorage */
+    try {
+      const raw = localStorage.getItem('tf_settings_cache');
+      if (raw) settings = { ...DEFAULTS, ...JSON.parse(raw) };
+    } catch {}
+
+    /* 1. JSONBin (écrase le cache si configuré) */
     if (binId) {
       try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, { headers: { 'X-Bin-Meta': 'false' } });
         if (res.ok) settings = { ...DEFAULTS, ...await res.json() };
       } catch {}
     }
+
     FIELDS.forEach(f => {
       const el = document.getElementById('s-' + f);
-      if (el) el.value = settings[f] || DEFAULTS[f] || '';
+      if (el) el.value = settings[f] ?? DEFAULTS[f] ?? '';
     });
   }
 
@@ -566,24 +620,35 @@
       const el = document.getElementById('s-' + f);
       if (el) settings[f] = el.value;
     });
-    const binId = localStorage.getItem('tf_bin_id');
-    const masterKey = localStorage.getItem('tf_master_key');
+
     const statusEl = document.getElementById('save-status');
-    statusEl.style.display = 'block'; statusEl.style.color = '#1a73e8'; statusEl.textContent = '⏳ Sauvegarde en cours...';
-    if (!binId || !masterKey) {
-      statusEl.style.color = '#dc2626'; statusEl.textContent = '❌ JSONBin non configuré. Allez dans la section configuration ci-dessus.';
-      return;
-    }
-    try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey },
-        body: JSON.stringify(settings)
-      });
-      if (!res.ok) throw new Error();
-      statusEl.style.color = '#16a34a'; statusEl.textContent = '✅ Paramètres sauvegardés ! Visibles immédiatement sur le site.';
-    } catch {
-      statusEl.style.color = '#dc2626'; statusEl.textContent = '❌ Erreur. Vérifiez votre connexion et votre Master Key.';
+    statusEl.style.display = 'block';
+
+    /* ── 1. Toujours sauvegarder dans le cache localStorage ── */
+    localStorage.setItem('tf_settings_cache', JSON.stringify(settings));
+
+    /* ── 2. Essayer JSONBin si configuré ── */
+    const binId     = localStorage.getItem('tf_bin_id');
+    const masterKey = localStorage.getItem('tf_master_key');
+
+    if (binId && masterKey) {
+      statusEl.style.color = '#1a73e8'; statusEl.textContent = '⏳ Synchronisation avec JSONBin...';
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey },
+          body: JSON.stringify(settings)
+        });
+        if (!res.ok) throw new Error();
+        statusEl.style.color = '#16a34a';
+        statusEl.textContent = '✅ Sauvegardé ! Visible immédiatement pour tous les visiteurs.';
+      } catch {
+        statusEl.style.color = '#f59e0b';
+        statusEl.textContent = '⚠️ Sauvegardé localement. Erreur JSONBin — vérifiez votre Master Key. (Visible sur votre navigateur uniquement)';
+      }
+    } else {
+      statusEl.style.color = '#16a34a';
+      statusEl.textContent = '✅ Sauvegardé ! Visible immédiatement sur ce navigateur. (Configurez JSONBin pour tous les visiteurs)';
     }
   }
 
@@ -591,43 +656,87 @@
   const ADMIN_USER = 'talbifluid';
   const ADMIN_PASS = 'Talbi@2025!';
 
-  function doLogin(e) {
+  // JWT Token stored in sessionStorage
+  let authToken = null;
+
+  async function doLogin(e) {
     e.preventDefault();
     const u = document.getElementById('loginUser').value;
     const p = document.getElementById('loginPass').value;
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-      sessionStorage.setItem('talbi-admin', '1');
+    const errorEl = document.getElementById('loginError');
+    errorEl.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.token) {
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      // Store token
+      authToken = data.token;
+      sessionStorage.setItem('talbi-admin-token', authToken);
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminApp').style.display = 'block';
-    } else {
-      document.getElementById('loginError').style.display = 'block';
+      loadDashboard();
+    } catch (err) {
+      console.error('Login error:', err);
+      errorEl.style.display = 'block';
     }
   }
 
   function doLogout() {
-    sessionStorage.removeItem('talbi-admin');
+    authToken = null;
+    sessionStorage.removeItem('talbi-admin-token');
     document.getElementById('adminApp').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
   }
 
-  // Auto-login if session active
-  if (sessionStorage.getItem('talbi-admin')) {
+  // Auto-login if token exists
+  authToken = sessionStorage.getItem('talbi-admin-token');
+  if (authToken) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
+    loadDashboard();
+  }
+
+  // Load dashboard stats
+  async function loadDashboard() {
+    if (!authToken) return;
+    try {
+      const res = await fetch('/api/admin/stats', {
+        headers: { 'Authorization': 'Bearer ' + authToken }
+      });
+      if (res.ok) {
+        const stats = await res.json();
+        document.getElementById('stat-demandes').textContent = stats.pendingContacts;
+        document.getElementById('stat-avis').textContent = stats.pendingReviews;
+        document.getElementById('stat-rdv').textContent = '—';
+      }
+    } catch (err) {
+      console.error('Stats error:', err);
+    }
   }
 
   // ===== TABS =====
   const titles = {
-    dashboard: 'Tableau de bord',
-    demandes: 'Demandes clients',
-    avis: 'Avis clients',
-    rdv: 'Rendez-vous',
-    services: 'Services & Tarifs',
-    blog: 'Articles Blog',
-    textes: 'Textes du site',
-    parametres: '⚙️ Paramètres du site'
+    dashboard:    'Tableau de bord',
+    demandes:     'Demandes clients',
+    avis:         'Avis clients',
+    rdv:          'Rendez-vous',
+    realisations: '📸 Réalisations Avant/Après',
+    services:     'Services & Tarifs',
+    blog:         'Articles Blog',
+    textes:       'Textes du site',
+    parametres:   '⚙️ Paramètres du site'
   };
 
   function showTab(name) {
@@ -637,7 +746,8 @@
     if (tab) tab.classList.add('active');
     document.getElementById('adminTitle').textContent = titles[name] || name;
     event.currentTarget && event.currentTarget.classList.add('active');
-    if (name === 'parametres') loadSettingsIntoForm();
+    if (name === 'parametres')   loadSettingsIntoForm();
+    if (name === 'realisations') loadRealisationsIntoAdmin();
   }
 
   function switchTextTab(name, btn) {
@@ -684,6 +794,213 @@
       <td><button class="btn btn-primary" style="padding:4px 12px;font-size:0.8rem" onclick="saveRow('${id}')">Sauvegarder</button></td>
     `;
     tbody.appendChild(row);
+  }
+
+  // ===== RÉALISATIONS AVANT/APRÈS =====
+
+  /* Compresse une image côté navigateur (max 900px, qualité 0.78) */
+  function compressImage(file) {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 900;
+          let w = img.width, h = img.height;
+          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.78));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* Génère le HTML d'une carte réalisation dans l'admin */
+  function renderRealisationCard(idx, data) {
+    const cats = ['Plomberie','Climatisation','Chauffage','Rénovation','Autre'];
+    const catOptions = cats.map(c => `<option value="${c}"${(data.cat||'Plomberie')===c?' selected':''}>${c}</option>`).join('');
+    const avantPreview = data.avant
+      ? `<img src="${data.avant}" alt="Avant" style="width:100%;height:140px;object-fit:cover;border-radius:8px;display:block">`
+      : `<div style="width:100%;height:140px;background:#f1f5f9;border:2px dashed #cbd5e1;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer" onclick="document.getElementById('file-avant-${idx}').click()"><span style="font-size:1.8rem">📷</span><span style="font-size:0.75rem;color:#94a3b8">Choisir photo Avant</span></div>`;
+    const apresPreview = data.apres
+      ? `<img src="${data.apres}" alt="Après" style="width:100%;height:140px;object-fit:cover;border-radius:8px;display:block">`
+      : `<div style="width:100%;height:140px;background:#f1f5f9;border:2px dashed #cbd5e1;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer" onclick="document.getElementById('file-apres-${idx}').click()"><span style="font-size:1.8rem">📷</span><span style="font-size:0.75rem;color:#94a3b8">Choisir photo Après</span></div>`;
+
+    return `
+      <div class="admin-card" id="real-card-${idx}" style="margin-bottom:16px;border:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <span style="font-weight:700;color:var(--text-light);font-size:0.9rem">Réalisation n°${idx+1}</span>
+          <button onclick="removeRealisation(${idx})" style="background:none;border:none;color:#dc2626;font-size:1rem;cursor:pointer;padding:4px 8px" title="Supprimer">✕ Supprimer</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <!-- Avant -->
+          <div>
+            <label style="font-size:0.8rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:6px">📸 Photo AVANT</label>
+            <div id="preview-avant-${idx}">${avantPreview}</div>
+            <input type="file" id="file-avant-${idx}" accept="image/*" style="display:none" onchange="handlePhotoUpload(this, ${idx}, 'avant')" />
+            <button onclick="document.getElementById('file-avant-${idx}').click()" class="btn btn-outline" style="width:100%;margin-top:8px;padding:6px;font-size:0.8rem">
+              ${data.avant ? '🔄 Changer la photo' : '📂 Choisir une photo'}
+            </button>
+            ${data.avant ? `<button onclick="clearPhoto(${idx},'avant')" style="background:none;border:none;color:#dc2626;font-size:0.78rem;cursor:pointer;margin-top:4px;padding:2px">✕ Supprimer la photo</button>` : ''}
+          </div>
+          <!-- Après -->
+          <div>
+            <label style="font-size:0.8rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:6px">✨ Photo APRÈS</label>
+            <div id="preview-apres-${idx}">${apresPreview}</div>
+            <input type="file" id="file-apres-${idx}" accept="image/*" style="display:none" onchange="handlePhotoUpload(this, ${idx}, 'apres')" />
+            <button onclick="document.getElementById('file-apres-${idx}').click()" class="btn btn-outline" style="width:100%;margin-top:8px;padding:6px;font-size:0.8rem">
+              ${data.apres ? '🔄 Changer la photo' : '📂 Choisir une photo'}
+            </button>
+            ${data.apres ? `<button onclick="clearPhoto(${idx},'apres')" style="background:none;border:none;color:#dc2626;font-size:0.78rem;cursor:pointer;margin-top:4px;padding:2px">✕ Supprimer la photo</button>` : ''}
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px">
+          <div class="form-group" style="margin:0">
+            <label style="font-size:0.8rem">Catégorie</label>
+            <select id="real-cat-${idx}" style="border:1px solid var(--border);padding:8px 10px;border-radius:8px;width:100%;font-size:0.9rem">${catOptions}</select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label style="font-size:0.8rem">Description</label>
+            <input type="text" id="real-desc-${idx}" value="${(data.desc||'').replace(/"/g,'&quot;')}" placeholder="Ex: Remplacement chaudière fioul par pompe à chaleur" style="font-size:0.9rem" />
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* Tableau en mémoire des réalisations */
+  let realisations = [];
+
+  function renderAllRealisations() {
+    const list = document.getElementById('realisations-list');
+    if (realisations.length === 0) {
+      list.innerHTML = `<p style="text-align:center;color:var(--text-light);padding:32px">Aucune réalisation. Cliquez sur "+ Ajouter une réalisation" pour commencer.</p>`;
+    } else {
+      list.innerHTML = realisations.map((r, i) => renderRealisationCard(i, r)).join('');
+    }
+  }
+
+  function addRealisation() {
+    realisations.push({ cat: 'Plomberie', desc: '', avant: '', apres: '' });
+    renderAllRealisations();
+    document.getElementById(`real-desc-${realisations.length-1}`).focus();
+  }
+
+  function removeRealisation(idx) {
+    if (confirm('Supprimer cette réalisation ?')) {
+      realisations.splice(idx, 1);
+      renderAllRealisations();
+    }
+  }
+
+  function clearPhoto(idx, side) {
+    realisations[idx][side] = '';
+    renderAllRealisations();
+  }
+
+  async function handlePhotoUpload(input, idx, side) {
+    if (!input.files || !input.files[0]) return;
+    const preview = document.getElementById(`preview-${side}-${idx}`);
+    preview.innerHTML = `<div style="height:140px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:8px;font-size:0.85rem;color:#64748b">⏳ Compression en cours...</div>`;
+    const compressed = await compressImage(input.files[0]);
+    realisations[idx][side] = compressed;
+    renderAllRealisations();
+  }
+
+  /* Lit les valeurs des champs texte avant sauvegarde */
+  function collectRealisationsData() {
+    return realisations.map((r, i) => ({
+      cat:   document.getElementById(`real-cat-${i}`)?.value  || r.cat,
+      desc:  document.getElementById(`real-desc-${i}`)?.value || r.desc,
+      avant: r.avant,
+      apres: r.apres
+    }));
+  }
+
+  async function saveRealisations() {
+    const data = collectRealisationsData();
+    const statusEl = document.getElementById('real-save-status');
+    statusEl.style.display = 'block';
+
+    /* ── 1. Toujours sauvegarder dans le cache localStorage ── */
+    localStorage.setItem('tf_photos_cache', JSON.stringify(data));
+    realisations = data;
+
+    /* ── 2. Essayer JSONBin si configuré ── */
+    const binId     = localStorage.getItem('tf_photos_bin_id');
+    const masterKey = localStorage.getItem('tf_master_key');
+
+    if (binId && masterKey) {
+      statusEl.style.color = '#1a73e8';
+      statusEl.textContent = '⏳ Synchronisation avec JSONBin...';
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+          method:  'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey },
+          body:    JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error();
+        statusEl.style.color = '#16a34a';
+        statusEl.textContent = '✅ Réalisations sauvegardées ! Visibles pour tous les visiteurs.';
+      } catch {
+        statusEl.style.color = '#f59e0b';
+        statusEl.textContent = '⚠️ Sauvegardé localement. Erreur JSONBin — vérifiez votre Master Key.';
+      }
+    } else {
+      statusEl.style.color = '#16a34a';
+      statusEl.textContent = '✅ Sauvegardé ! Visible sur ce navigateur. (Configurez JSONBin pour tous les visiteurs)';
+    }
+  }
+
+  /* Charge les réalisations existantes depuis JSONBin */
+  async function loadRealisationsIntoAdmin() {
+    const binId = localStorage.getItem('tf_photos_bin_id') || '';
+    document.getElementById('photos-binid').value = binId;
+    if (!binId) { renderAllRealisations(); return; }
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, { headers: { 'X-Bin-Meta': 'false' } });
+      if (res.ok) {
+        const data = await res.json();
+        realisations = Array.isArray(data) ? data : [];
+      }
+    } catch {}
+    renderAllRealisations();
+  }
+
+  async function setupPhotosBin() {
+    const masterKey = localStorage.getItem('tf_master_key');
+    if (!masterKey) {
+      alert('⚠️ Configurez d\'abord votre Master Key dans l\'onglet ⚙️ Paramètres.');
+      return;
+    }
+    const status = document.getElementById('photos-cfg-status');
+    status.style.display = 'block'; status.style.color = '#7c3aed'; status.textContent = '⏳ Création du bin photos...';
+    try {
+      const res = await fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey, 'X-Bin-Name': 'talbifluid-photos', 'X-Bin-Private': 'false' },
+        body: JSON.stringify([])
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const binId = data.metadata.id;
+      localStorage.setItem('tf_photos_bin_id', binId);
+      document.getElementById('photos-binid').value = binId;
+      status.style.color = '#16a34a'; status.textContent = '✅ Bin photos créé ! ID : ' + binId;
+    } catch {
+      status.style.color = '#dc2626'; status.textContent = '❌ Erreur. Vérifiez votre Master Key dans l\'onglet Paramètres.';
+    }
+  }
+
+  function savePhotosBinConfig() {
+    const binId = document.getElementById('photos-binid').value.trim();
+    if (!binId) { alert('Entrez un Bin ID.'); return; }
+    localStorage.setItem('tf_photos_bin_id', binId);
+    const status = document.getElementById('photos-cfg-status');
+    status.style.display = 'block'; status.style.color = '#16a34a'; status.textContent = '✅ Configuration sauvegardée.';
   }
 
   function showBlogEditor() {

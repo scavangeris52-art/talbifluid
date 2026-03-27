@@ -1,20 +1,39 @@
 /**
  * TALBI'FLUID — Backend Node.js + Express
  * Stockage : fichiers JSON (aucune compilation native requise)
+ * Authentification : JWT + bcrypt password hashing
+ * Variables d'environnement : .env (non commité)
  *
  * Démarrage :
  *   npm install
  *   node server.js
+ *
+ * Configuration via .env :
+ *   ADMIN_USER=admin
+ *   ADMIN_PASS_HASH=<hash bcrypt>
+ *   JWT_SECRET=<clé secrète>
+ *   SMTP_HOST=smtp.gmail.com
+ *   SMTP_PORT=587
+ *   SMTP_USER=votre@email.com
+ *   SMTP_PASS=votre-app-password
+ *   ADMIN_EMAIL=admin@talbifluid.fr
  */
 
+require('dotenv').config();
 const express    = require('express');
 const cors       = require('cors');
 const path       = require('path');
 const fs         = require('fs');
 const nodemailer = require('nodemailer');
+const bcrypt     = require('bcrypt');
+const jwt        = require('jsonwebtoken');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
+
+// ========== CONFIGURATION ==========
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production-2025';
+const TOKEN_EXPIRY = '7d';
 
 // ========== MIDDLEWARES ==========
 app.use(cors());
@@ -57,26 +76,31 @@ if (!fs.existsSync(dbFile('services'))) {
   ]);
 }
 
+// Initialiser contacts.json si vide
+if (!fs.existsSync(dbFile('contacts'))) {
+  writeDb('contacts', []);
+}
+
 // ========== EMAIL (Nodemailer) ==========
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: 587,
+  port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || 'votre@email.com',
-    pass: process.env.SMTP_PASS || 'votre-mot-de-passe'
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || ''
   }
 });
 
 async function sendEmail(to, subject, html) {
   try {
     await transporter.sendMail({
-      from: '"TALBI\'FLUID" <contact@talbifluid.fr>',
+      from: '"TALBI\'FLUID" <' + (process.env.SMTP_USER || 'noreply@talbifluid.fr') + '>',
       to, subject, html
     });
   } catch (err) {
     // Ne pas bloquer l'API si l'email échoue
-    console.warn('Email non envoyé (SMTP non configuré):', err.message);
+    console.warn('Email non envoyé (SMTP non configuré ou erreur):', err.message);
   }
 }
 
@@ -245,14 +269,38 @@ app.delete('/api/admin/services/:id', adminAuth, (req, res) => {
 });
 
 // ========== AUTH ADMIN ==========
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   const { username, password } = req.body;
-  const u = process.env.ADMIN_USER || 'admin';
-  const p = process.env.ADMIN_PASS || 'admin123';
-  if (username === u && password === p) {
-    res.json({ success: true, token: 'talbi-admin-token-2025' });
-  } else {
-    res.status(401).json({ error: 'Identifiants incorrects' });
+
+  // Get admin credentials from environment variables
+  const adminUser = process.env.ADMIN_USER || 'admin';
+  const adminPassHash = process.env.ADMIN_PASS_HASH;
+
+  if (!adminPassHash) {
+    return res.status(500).json({ error: 'Configuration erreur: ADMIN_PASS_HASH non défini' });
+  }
+
+  if (username !== adminUser) {
+    return res.status(401).json({ error: 'Identifiants incorrects' });
+  }
+
+  try {
+    const isMatch = await bcrypt.compare(password, adminPassHash);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Identifiants incorrects' });
+    }
+
+    // Générer JWT token
+    const token = jwt.sign(
+      { user: username },
+      JWT_SECRET,
+      { expiresIn: TOKEN_EXPIRY }
+    );
+
+    res.json({ success: true, token });
+  } catch (err) {
+    console.error('Auth error:', err);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 
@@ -275,11 +323,20 @@ app.get('/api/admin/stats', adminAuth, (req, res) => {
 
 // ========== MIDDLEWARE AUTH ==========
 function adminAuth(req, res, next) {
-  const token = req.headers.authorization?.replace('Bearer ', '');
-  if (token === 'talbi-admin-token-2025' || process.env.NODE_ENV === 'development') {
-    return next();
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Token manquant' });
   }
-  res.status(401).json({ error: 'Non autorisé' });
+
+  const token = authHeader.replace('Bearer ', '');
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Token invalide ou expiré' });
+  }
 }
 
 // ========== FALLBACK SPA ==========

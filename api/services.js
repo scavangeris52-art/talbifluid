@@ -1,66 +1,46 @@
 /**
  * TALBI'FLUID — Vercel Serverless Function
- * GET /api/services — Retourne la liste des services / tarifs
+ * GET /api/services — Retourne la liste des services / tarifs depuis la BD JSON
  *
- * Pour modifier les tarifs : éditez le tableau `SERVICES` ci-dessous,
- * puis faites un git push → redéploiement automatique sur Vercel.
+ * Les services sont stockés dans backend/data/services.json
+ * et gérés via l'admin panel pour ajouter/modifier/supprimer des services.
  */
 
-const SERVICES = [
-  {
-    id: 1,
-    name: 'Détection de fuite',
-    category: 'Plomberie',
-    price: 49,
-    description: 'Diagnostic complet avec rapport',
-    featured: false,
-    active: true
-  },
-  {
-    id: 2,
-    name: 'Entretien chaudière',
-    category: 'Chauffage',
-    price: 89,
-    description: 'Révision complète + attestation',
-    featured: true,
-    active: true
-  },
-  {
-    id: 3,
-    name: 'Installation climatisation',
-    category: 'Climatisation',
-    price: 799,
-    description: 'Fourniture + pose + mise en service',
-    featured: false,
-    active: true
-  },
-  {
-    id: 4,
-    name: 'Débouchage canalisation',
-    category: 'Plomberie',
-    price: 120,
-    description: 'Débouchage haute pression',
-    featured: false,
-    active: true
-  },
-  {
-    id: 5,
-    name: 'Remplacement chauffe-eau',
-    category: 'Plomberie',
-    price: 450,
-    description: 'Fourniture + installation + mise en service',
-    featured: false,
-    active: true
+const fs = require('fs');
+const path = require('path');
+
+const getDataDir = () => {
+  return path.join(process.cwd(), 'backend', 'data');
+};
+
+function readDb(name) {
+  try {
+    const file = path.join(getDataDir(), name + '.json');
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, 'utf8'));
+    }
+  } catch (err) {
+    console.error('DB read error:', err.message);
   }
-];
+  return [];
+}
 
 module.exports = (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const active = SERVICES
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Lire les services depuis la BD JSON
+  const services = readDb('services')
     .filter(s => s.active)
     .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
   res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
-  return res.status(200).json(active);
+  return res.status(200).json(services);
 };

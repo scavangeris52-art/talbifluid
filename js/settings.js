@@ -25,30 +25,47 @@ const SETTINGS_DEFAULTS = {
   price3Desc:         'Fourniture + pose + mise en service',
 };
 
-/* ── Récupère le Bin ID depuis localStorage ── */
-function getBinId()     { return localStorage.getItem('tf_bin_id') || ''; }
-function getMasterKey() { return localStorage.getItem('tf_master_key') || ''; }
+/* ── Récupère les IDs/clés depuis localStorage ── */
+function getBinId()       { return localStorage.getItem('tf_bin_id') || ''; }
+function getMasterKey()   { return localStorage.getItem('tf_master_key') || ''; }
+function getPhotosBinId() { return localStorage.getItem('tf_photos_bin_id') || ''; }
 
-/* ── Charge les paramètres depuis JSONBin ── */
+/* ── Cache localStorage (fonctionne sans JSONBin) ── */
+function getLocalSettings() {
+  try {
+    const raw = localStorage.getItem('tf_settings_cache');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+/* ── Charge les paramètres : JSONBin → cache local → défauts ── */
 async function loadSettings() {
   const binId = getBinId();
-  if (!binId) {
-    applySettings(SETTINGS_DEFAULTS);
-    return SETTINGS_DEFAULTS;
+
+  /* 1. Appliquer immédiatement le cache local (pas d'attente réseau) */
+  const cached = getLocalSettings();
+  if (cached) applySettings({ ...SETTINGS_DEFAULTS, ...cached });
+
+  /* 2. Essayer JSONBin en arrière-plan si configuré */
+  if (binId) {
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+        headers: { 'X-Bin-Meta': 'false' }
+      });
+      if (!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      const settings = { ...SETTINGS_DEFAULTS, ...data };
+      /* Mettre à jour le cache local avec les données distantes */
+      localStorage.setItem('tf_settings_cache', JSON.stringify(settings));
+      applySettings(settings);
+      return settings;
+    } catch {}
   }
-  try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-      headers: { 'X-Bin-Meta': 'false' }
-    });
-    if (!res.ok) throw new Error('fetch failed');
-    const data = await res.json();
-    const settings = { ...SETTINGS_DEFAULTS, ...data };
-    applySettings(settings);
-    return settings;
-  } catch {
-    applySettings(SETTINGS_DEFAULTS);
-    return SETTINGS_DEFAULTS;
-  }
+
+  /* 3. Fallback : cache local ou défauts */
+  const fallback = { ...SETTINGS_DEFAULTS, ...(cached || {}) };
+  applySettings(fallback);
+  return fallback;
 }
 
 /* ── Sauvegarde les paramètres dans JSONBin ── */
@@ -147,7 +164,102 @@ function applySettings(s) {
   set('[data-s="price3Desc"]',    s.price3Desc);
 }
 
+/* ══════════════════════════════════════════════════════
+   PHOTOS AVANT / APRÈS
+══════════════════════════════════════════════════════ */
+
+/* ── Charge les photos : JSONBin → cache local → vide ── */
+async function loadPhotos() {
+  /* Appliquer le cache local immédiatement */
+  try {
+    const raw = localStorage.getItem('tf_photos_cache');
+    if (raw) {
+      const cached = JSON.parse(raw);
+      if (Array.isArray(cached) && cached.length > 0) applyPhotos(cached);
+    }
+  } catch {}
+
+  /* Essayer JSONBin si configuré */
+  const binId = getPhotosBinId();
+  if (!binId) {
+    try {
+      const raw = localStorage.getItem('tf_photos_cache');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+      headers: { 'X-Bin-Meta': 'false' }
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const photos = Array.isArray(data) ? data : [];
+    localStorage.setItem('tf_photos_cache', JSON.stringify(photos));
+    applyPhotos(photos);
+    return photos;
+  } catch {
+    try {
+      const raw = localStorage.getItem('tf_photos_cache');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }
+}
+
+/* ── Sauvegarde les photos dans JSONBin ── */
+async function savePhotos(photos) {
+  const binId     = getPhotosBinId();
+  const masterKey = getMasterKey();
+  if (!binId || !masterKey) return false;
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': masterKey },
+      body:    JSON.stringify(photos)
+    });
+    return res.ok;
+  } catch { return false; }
+}
+
+/* ── Applique les photos dans la section avant/après ── */
+function applyPhotos(photos) {
+  const grid = document.getElementById('aa-grid');
+  if (!grid || !photos || photos.length === 0) return;
+
+  const catIcons = { 'Plomberie':'🔧', 'Climatisation':'❄️', 'Chauffage':'🔥', 'Rénovation':'🏠', 'Autre':'⚙️' };
+
+  grid.innerHTML = photos.map(p => {
+    const icon = catIcons[p.cat] || '⚙️';
+    const avantHtml = p.avant
+      ? `<img src="${p.avant}" alt="Avant" style="width:100%;height:200px;object-fit:cover;display:block">`
+      : `<div class="aa-img-placeholder"><span class="aa-placeholder-icon">📷</span><span class="aa-placeholder-text">Photo à venir</span></div>`;
+    const apresHtml = p.apres
+      ? `<img src="${p.apres}" alt="Après" style="width:100%;height:200px;object-fit:cover;display:block">`
+      : `<div class="aa-img-placeholder"><span class="aa-placeholder-icon">📷</span><span class="aa-placeholder-text">Photo à venir</span></div>`;
+    return `
+      <div class="aa-card">
+        <div class="aa-images">
+          <div class="aa-side">
+            <div class="aa-label aa-label-avant">Avant</div>
+            ${avantHtml}
+          </div>
+          <div class="aa-divider">↔</div>
+          <div class="aa-side">
+            <div class="aa-label aa-label-apres">Après</div>
+            ${apresHtml}
+          </div>
+        </div>
+        <div class="aa-caption">
+          <span class="aa-cat">${icon} ${p.cat || ''}</span>
+          <p class="aa-desc">${p.desc || ''}</p>
+        </div>
+      </div>`;
+  }).join('');
+}
+
 /* ── Initialisation automatique sur les pages publiques ── */
 if (!window.location.pathname.includes('/admin')) {
-  document.addEventListener('DOMContentLoaded', loadSettings);
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSettings();
+    loadPhotos();
+  });
 }
